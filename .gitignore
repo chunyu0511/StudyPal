@@ -1,0 +1,32 @@
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+server/database.sqlite
+server/study-share.db
+
+# Uploads (Keep the folder but ignore content)
+server/uploads/*
+!server/uploads/.gitkeep
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build output
+client/dist/
+client/build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
