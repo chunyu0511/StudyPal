@@ -1,10 +1,13 @@
 
 import { useEffect, useState } from 'react';
 import { adminAPI } from '../../utils/api';
+import { useToast } from '../../context/ToastContext';
+import { ListSkeleton } from '../../components/Skeleton';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const toast = useToast();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -13,12 +16,13 @@ const UserManagement = () => {
                 setUsers(data);
             } catch (error) {
                 console.error(error);
+                toast.error('加载用户列表失败');
             } finally {
                 setLoading(false);
             }
         };
         fetchUsers();
-    }, []);
+    }, [toast]);
 
     const handleBan = async (id, currentStatus) => {
         const action = currentStatus ? '解封' : '封禁';
@@ -27,14 +31,24 @@ const UserManagement = () => {
         try {
             const res = await adminAPI.toggleBan(id);
             setUsers(users.map(u => u.id === id ? { ...u, is_banned: res.is_banned } : u));
-            alert(`${action}成功`);
+            toast.success(`${action}成功`);
         } catch (error) {
             console.error(error);
-            alert(error.response?.data?.error || '操作失败');
+            toast.error(error.response?.data?.error || '操作失败');
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return (
+        <div>
+            <div className="page-header">
+                <div>
+                    <h1 className="page-title">用户管理</h1>
+                    <p className="page-subtitle">查看和管理所有注册用户</p>
+                </div>
+            </div>
+            <ListSkeleton rows={8} />
+        </div>
+    );
 
     return (
         <div>
@@ -43,7 +57,7 @@ const UserManagement = () => {
                     <h1 className="page-title">用户管理</h1>
                     <p className="page-subtitle">查看和管理所有注册用户</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => alert('此功能正在开发中')}>+ 添加用户</button>
+                <button className="btn btn-primary" onClick={() => toast.info('此功能正在开发中')}>+ 添加用户</button>
             </div>
 
             <div className="admin-table-container">
@@ -60,11 +74,11 @@ const UserManagement = () => {
                     </thead>
                     <tbody>
                         {users.map(u => (
-                            <tr key={u.id} style={{ opacity: u.is_banned ? 0.6 : 1, background: u.is_banned ? '#f9fafb' : 'transparent' }}>
+                            <tr key={u.id} style={{ opacity: u.is_banned ? 0.7 : 1 }}>
                                 <td>#{u.id}</td>
                                 <td>
                                     <div className="table-row-title">{u.username}</div>
-                                    <div className="table-row-sub">{u.email}</div>
+                                    <div className="table-row-sub" style={{ color: 'var(--text-muted)' }}>{u.email}</div>
                                 </td>
                                 <td>
                                     <span className={`role-badge ${u.role}`}>
@@ -73,18 +87,22 @@ const UserManagement = () => {
                                 </td>
                                 <td>
                                     {u.is_banned ? (
-                                        <span style={{ color: '#dc2626', fontWeight: 600, fontSize: '0.8rem' }}>🛑 已封禁</span>
+                                        <span style={{ color: 'var(--accent-orange)', fontWeight: 600, fontSize: '0.8rem' }}>🛑 已封禁</span>
                                     ) : (
-                                        <span style={{ color: '#16a34a', fontWeight: 600, fontSize: '0.8rem' }}>✅ 正常</span>
+                                        <span style={{ color: 'var(--accent-lime)', fontWeight: 600, fontSize: '0.8rem' }}>✅ 正常</span>
                                     )}
                                 </td>
                                 <td>{new Date(u.created_at).toLocaleDateString()}</td>
                                 <td style={{ textAlign: 'right' }}>
                                     <button
-                                        className="delete-btn"
+                                        className="btn"
                                         style={{
-                                            color: u.is_banned ? '#16a34a' : '#dc2626',
-                                            background: u.is_banned ? '#dcfce7' : '#fee2e2'
+                                            border: '1px solid',
+                                            borderColor: u.is_banned ? 'var(--accent-lime)' : 'var(--accent-orange)',
+                                            color: u.is_banned ? 'var(--accent-lime)' : 'var(--accent-orange)',
+                                            background: 'transparent',
+                                            padding: '0.4rem 0.8rem',
+                                            fontSize: '0.8rem'
                                         }}
                                         onClick={() => handleBan(u.id, u.is_banned)}
                                     >

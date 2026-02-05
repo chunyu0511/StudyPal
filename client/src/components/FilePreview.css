@@ -1,111 +1,160 @@
+/* File Preview Component - Zine Theme Enhancement */
 .file-preview-container {
-    width: 100%;
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
     overflow: hidden;
-    margin-bottom: var(--spacing-xl);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 300px;
+    margin: 2rem 0;
     position: relative;
-    border: 1px solid var(--border-light);
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
 }
 
-/* 图片预览 */
+/* Base states */
+.preview-loading,
+.preview-error {
+    padding: 4rem;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+/* Image Preview */
 .image-preview {
-    background-color: #f0f0f0;
+    align-items: center;
+    justify-content: center;
 }
 
 .image-preview img {
     max-width: 100%;
-    max-height: 800px;
-    object-fit: contain;
+    max-height: 80vh;
     display: block;
+    object-fit: contain;
 }
 
-/* 视频预览 */
+/* Video Preview */
 .video-preview {
-    background: black;
-    aspect-ratio: 16/9;
+    background: #000;
 }
 
-.video-preview video {
+.video-wrapper {
     width: 100%;
-    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
 }
 
-/* PDF预览 */
-.pdf-preview {
-    height: 800px;
-    background: #525659;
+/* Audio Preview */
+.audio-preview {
+    padding: 3rem;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-dark) 100%);
+    align-items: center;
+    justify-content: center;
 }
 
-.pdf-preview iframe {
-    border: none;
+.audio-wrapper {
     width: 100%;
-    height: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.audio-info {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.audio-icon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 10px var(--accent-lime));
+}
+
+.audio-title {
+    color: var(--text-light);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.custom-audio {
+    width: 100%;
+    height: 50px;
+    filter: invert(1) hue-rotate(180deg);
+    /* Style the default audio player a bit */
+}
+
+/* PDF Preview */
+.preview-header {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .pdf-fallback {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    color: white;
-    gap: var(--spacing-md);
+    padding: 4rem;
+    text-align: center;
 }
 
-/* 无预览 */
+/* No Preview Fallback */
 .no-preview {
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-    padding: var(--spacing-3xl);
-    height: 400px;
+    padding: 4rem 2rem;
 }
 
 .no-preview-content {
+    max-width: 500px;
+    margin: 0 auto;
     text-align: center;
+}
+
+.preview-icon-box {
+    margin-bottom: 2rem;
+}
+
+.large-icon {
+    font-size: 5rem;
+    display: inline-block;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    border: 1px solid var(--border-subtle);
+}
+
+.no-preview-title {
+    color: var(--text-light);
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.no-preview-desc {
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+
+.preview-actions {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: var(--spacing-lg);
+    gap: 1.5rem;
 }
 
-.no-preview .file-icon-large {
-    font-size: 80px;
-    margin-bottom: var(--spacing-sm);
-    animation: bounce 2s ease-in-out infinite;
+.office-tip {
+    font-size: 0.85rem;
+    color: var(--accent-orange);
+    font-style: italic;
 }
 
-.no-preview h3 {
-    font-size: 20px;
+.btn-link {
+    color: var(--accent-lime);
+    text-decoration: none;
     font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
 }
 
-.no-preview p {
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-/* Loading & Error */
-.preview-loading {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-tertiary);
-    z-index: 10;
-}
-
-.preview-error {
-    color: var(--error-color);
-    font-weight: 500;
+.btn-link:hover {
+    text-decoration: underline;
 }

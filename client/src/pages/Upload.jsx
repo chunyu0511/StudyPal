@@ -2,17 +2,20 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { materialsAPI } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import './Upload.css';
 
 const Upload = () => {
     const { isAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const toast = useToast();
 
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         type: 'note',
         category: '高等数学',
+        tags: '', // 新增标签字段
     });
 
     const [file, setFile] = useState(null);
@@ -24,9 +27,10 @@ const Upload = () => {
     // 如果未登录，重定向到登录页
     useEffect(() => {
         if (!isAuthenticated) {
+            toast.warning('请先登录再执行上传操作');
             navigate('/login');
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, toast]);
 
     const handleInputChange = (e) => {
         setFormData({
@@ -42,13 +46,15 @@ const Upload = () => {
         const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
 
         if (!allowedTypes.includes(fileExtension)) {
-            setError('不支持的文件类型。支持的格式：PDF, Word, PPT, Excel, 视频, 压缩包');
+            toast.error('不支持的文件类型');
+            setError('支持的格式：PDF, Word, PPT, Excel, 视频, 压缩包');
             return;
         }
 
         // 验证文件大小 (100MB)
         const maxSize = 100 * 1024 * 1024;
         if (selectedFile.size > maxSize) {
+            toast.error('文件过大');
             setError('文件大小不能超过 100MB');
             return;
         }
@@ -103,23 +109,34 @@ const Upload = () => {
         setUploading(true);
 
         try {
+            // 解析标签
+            const tagsArray = formData.tags
+                .split(/,|，/) // 支持中英文逗号
+                .map(t => t.trim())
+                .filter(t => t !== '');
+
             const formDataToSend = new FormData();
-            formDataToSend.append('file', file);
+            // 建议先添加文本字段，最后添加文件，确保后端 multer 能更早解析到字段
             formDataToSend.append('title', formData.title);
             formDataToSend.append('description', formData.description);
             formDataToSend.append('type', formData.type);
             formDataToSend.append('category', formData.category);
+            formDataToSend.append('tags', JSON.stringify(tagsArray));
+            formDataToSend.append('file', file);
 
             await materialsAPI.upload(formDataToSend);
 
             setSuccess(true);
+            toast.success('资料上传成功！感谢你的贡献 ✨');
 
-            // 3秒后跳转到资料列表
+            // 2秒后跳转到资料列表
             setTimeout(() => {
                 navigate('/materials');
             }, 2000);
         } catch (err) {
-            setError(err.response?.data?.error || '上传失败，请稍后重试');
+            const errorMsg = err.response?.data?.error || '上传失败，请稍后重试';
+            setError(errorMsg);
+            toast.error(errorMsg);
         } finally {
             setUploading(false);
         }
@@ -178,7 +195,7 @@ const Upload = () => {
                             </h3>
 
                             <div
-                                className={`file - drop - zone ${dragActive ? 'active' : ''} ${file ? 'has-file' : ''} `}
+                                className={`file-drop-zone ${dragActive ? 'active' : ''} ${file ? 'has-file' : ''}`}
                                 onDragEnter={handleDrag}
                                 onDragOver={handleDrag}
                                 onDragLeave={handleDrag}
@@ -305,6 +322,24 @@ const Upload = () => {
                                         onChange={handleInputChange}
                                         rows="4"
                                     />
+                                </div>
+
+                                <div className="form-group full-width">
+                                    <label htmlFor="tags" className="form-label">
+                                        标签 (Tags)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="tags"
+                                        name="tags"
+                                        className="input"
+                                        placeholder="多个标签用逗号分隔，如：期末真题, 高数上, 必考"
+                                        value={formData.tags}
+                                        onChange={handleInputChange}
+                                    />
+                                    <p className="form-help">
+                                        添加标签有助于资料被更多人发现
+                                    </p>
                                 </div>
                             </div>
                         </div>

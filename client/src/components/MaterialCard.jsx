@@ -75,6 +75,22 @@ const MaterialCard = ({ material }) => {
                     {material.description || '暂无描述'}
                 </p>
 
+                {/* 标签展示 */}
+                {material.tags && (
+                    <div className="material-tags">
+                        {(() => {
+                            try {
+                                const tags = typeof material.tags === 'string' ? JSON.parse(material.tags) : material.tags;
+                                return Array.isArray(tags) && tags.slice(0, 3).map((tag, idx) => (
+                                    <span key={idx} className="tag-badge">#{tag}</span>
+                                ));
+                            } catch (e) {
+                                return null;
+                            }
+                        })()}
+                    </div>
+                )}
+
                 <div className="material-meta">
                     <span className="meta-item">
                         <span className="meta-icon">📚</span>

@@ -31,22 +31,35 @@ const AuditLogs = () => {
                     <tbody>
                         {logs.map(log => (
                             <tr key={log.id}>
-                                <td style={{ color: '#64748b', fontSize: '0.9rem' }}>{log.time}</td>
+                                <td style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{log.time}</td>
                                 <td>
                                     <span style={{
-                                        background: '#f1f5f9',
-                                        padding: '0.25rem 0.5rem',
+                                        background: 'rgba(255, 255, 255, 0.1)',
+                                        color: 'var(--text-light)',
+                                        padding: '0.25rem 0.6rem',
                                         borderRadius: '0.25rem',
                                         fontFamily: 'monospace',
                                         fontSize: '0.85rem',
-                                        fontWeight: 600
+                                        fontWeight: 600,
+                                        border: '1px solid rgba(255,255,255,0.05)'
                                     }}>
                                         {log.action}
                                     </span>
                                 </td>
                                 <td>{log.target}</td>
-                                <td><span className="role-badge admin">{log.user}</span></td>
-                                <td style={{ fontFamily: 'monospace', color: '#64748b' }}>{log.ip}</td>
+                                <td>
+                                    <span style={{
+                                        color: 'var(--accent-lime)',
+                                        background: 'rgba(200, 255, 0, 0.1)',
+                                        padding: '2px 6px',
+                                        borderRadius: '4px',
+                                        fontSize: '0.8rem',
+                                        fontWeight: 600
+                                    }}>
+                                        {log.user}
+                                    </span>
+                                </td>
+                                <td style={{ fontFamily: 'monospace', color: 'var(--text-muted)' }}>{log.ip}</td>
                             </tr>
                         ))}
                     </tbody>

@@ -2,10 +2,12 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initDatabase } from './models/database.js';
-import usersRouter from './routes/users.js';
 import materialsRouter from './routes/materials.js';
+import communityRouter from './routes/community.js';
 import interactionsRouter from './routes/interactions.js';
+import usersRouter from './routes/users.js';
 import adminRouter from './routes/admin.js';
+import bountiesRouter from './routes/bounties.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -30,10 +32,12 @@ async function startServer() {
     await initDatabase();
 
     // 路由
-    app.use('/api/users', usersRouter);
     app.use('/api/materials', materialsRouter);
+    app.use('/api/community', communityRouter);
     app.use('/api/interactions', interactionsRouter);
+    app.use('/api/users', usersRouter);
     app.use('/api/admin', adminRouter);
+    app.use('/api/bounties', bountiesRouter);
 
     // 健康检查
     app.get('/api/health', (req, res) => {
@@ -42,7 +46,11 @@ async function startServer() {
 
     // 错误处理中间件
     app.use((err, req, res, next) => {
-        console.error('服务器错误:', err);
+        console.error('==================== 服务器错误 ====================');
+        console.error('时间:', new Date().toISOString());
+        console.error('错误:', err.message);
+        console.error('堆栈:', err.stack);
+        console.error('===================================================');
         res.status(500).json({ error: err.message || '服务器内部错误' });
     });
 

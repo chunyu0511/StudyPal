@@ -68,10 +68,10 @@ const Overview = () => {
             </div>
 
             {/* 趋势图表 */}
-            <div style={{ marginTop: '2rem', background: 'white', borderRadius: '1rem', padding: '1.5rem', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.02), 0 10px 15px -3px rgba(0,0,0,0.05)' }}>
+            <div className="chart-container">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                    <h3 style={{ margin: 0, fontSize: '1.25rem', color: '#1e293b' }}>📈 流量趋势 (近7天)</h3>
-                    <div style={{ fontSize: '0.875rem', color: '#64748b' }}>实时更新</div>
+                    <h3 className="chart-title">📈 流量趋势 (近7天)</h3>
+                    <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>实时更新</div>
                 </div>
 
                 <div style={{ height: '350px', width: '100%' }}>
@@ -82,19 +82,24 @@ const Overview = () => {
                         >
                             <defs>
                                 <linearGradient id="colorDownload" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.5} />
                                     <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                                 </linearGradient>
                                 <linearGradient id="colorUser" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                    <stop offset="5%" stopColor="#c8ff00" stopOpacity={0.5} />
+                                    <stop offset="95%" stopColor="#c8ff00" stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} dy={10} />
-                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
+                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#8b8b9a', fontSize: 12 }} dy={10} />
+                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#8b8b9a', fontSize: 12 }} />
                             <Tooltip
-                                contentStyle={{ borderRadius: '0.5rem', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                                contentStyle={{
+                                    backgroundColor: '#1a1a2e',
+                                    border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '0.5rem',
+                                    color: '#f0f0f0'
+                                }}
                                 itemStyle={{ fontSize: '0.9rem', fontWeight: 500 }}
                             />
                             <Legend wrapperStyle={{ paddingTop: '20px' }} />
@@ -102,7 +107,7 @@ const Overview = () => {
                                 type="monotone"
                                 dataKey="users"
                                 name="新增用户"
-                                stroke="#10b981"
+                                stroke="#c8ff00"
                                 fillOpacity={1}
                                 fill="url(#colorUser)"
                                 strokeWidth={2}
@@ -120,7 +125,7 @@ const Overview = () => {
                                 type="monotone"
                                 dataKey="materials"
                                 name="新增资料"
-                                stroke="#f59e0b"
+                                stroke="#ff6b35"
                                 fill="none"
                                 strokeWidth={2}
                                 strokeDasharray="5 5"

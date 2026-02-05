@@ -46,13 +46,14 @@ export function prepare(sql) {
         const stmt = db.prepare(sql);
         stmt.bind(params);
         stmt.step();
+
+        // 获取最后插入的ID (Move before saveDatabase and stmt.free just to be safe)
+        const result = db.exec("SELECT last_insert_rowid() as id");
+        const lastId = result[0]?.values[0]?.[0] || 0;
+
         stmt.free();
 
         saveDatabase();
-
-        // 获取最后插入的ID
-        const result = db.exec("SELECT last_insert_rowid() as id");
-        const lastId = result[0]?.values[0]?.[0] || 0;
 
         return {
           changes: 1,
@@ -153,11 +154,36 @@ export async function initDatabase() {
     db.prepare("UPDATE users SET role = 'admin' WHERE username = 'admin'").run();
   }
 
-  // 尝试添加 is_banned 字段到 users 表
+  // 尝试添加 avatar, bio, is_banned 字段到 users 表
   try {
-    db.prepare("ALTER TABLE users ADD COLUMN is_banned INTEGER DEFAULT 0").run();
-    console.log('用户表已升级: 添加 is_banned 字段');
-  } catch (error) { }
+    const tableInfo = db.exec("PRAGMA table_info(users)")[0].values;
+    if (!tableInfo.some(col => col[1] === 'avatar')) {
+      db.run("ALTER TABLE users ADD COLUMN avatar TEXT");
+    }
+    if (!tableInfo.some(col => col[1] === 'bio')) {
+      db.run("ALTER TABLE users ADD COLUMN bio TEXT");
+    }
+    if (!tableInfo.some(col => col[1] === 'is_banned')) {
+      db.run("ALTER TABLE users ADD COLUMN is_banned INTEGER DEFAULT 0");
+    }
+  } catch (error) {
+    console.warn('检查/添加 users 字段时出错:', error);
+  }
+
+  // 尝试添加 xp 和 level 字段到 users 表
+  try {
+    const tableInfo = db.exec("PRAGMA table_info(users)")[0].values;
+    if (!tableInfo.some(col => col[1] === 'xp')) {
+      db.run("ALTER TABLE users ADD COLUMN xp INTEGER DEFAULT 0");
+      console.log('用户表已升级: 添加 xp 字段');
+    }
+    if (!tableInfo.some(col => col[1] === 'level')) {
+      db.run("ALTER TABLE users ADD COLUMN level INTEGER DEFAULT 1");
+      console.log('用户表已升级: 添加 level 字段');
+    }
+  } catch (error) {
+    console.warn('升级 users 表 (xp/level) 时出错:', error);
+  }
 
   // settings 表 (系统设置)
   db.run(`
@@ -186,6 +212,8 @@ export async function initDatabase() {
       user_id INTEGER NOT NULL,
       title TEXT NOT NULL,
       description TEXT,
+      tags TEXT DEFAULT '[]', -- JSON 数组格式存储标签
+      search_text TEXT, -- 聚合搜索文本（含拼音）
       type TEXT NOT NULL,
       category TEXT NOT NULL,
       file_name TEXT NOT NULL,
@@ -200,6 +228,29 @@ export async function initDatabase() {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);
+
+  // 资料表迁移：添加 tags, search_text, rating, view_count
+  try {
+    const materialInfo = db.exec("PRAGMA table_info(materials)")[0].values;
+    if (!materialInfo.some(col => col[1] === 'tags')) {
+      db.run("ALTER TABLE materials ADD COLUMN tags TEXT DEFAULT '[]'");
+    }
+    if (!materialInfo.some(col => col[1] === 'search_text')) {
+      db.run("ALTER TABLE materials ADD COLUMN search_text TEXT");
+    }
+    if (!materialInfo.some(col => col[1] === 'view_count')) {
+      db.run("ALTER TABLE materials ADD COLUMN view_count INTEGER DEFAULT 0");
+    }
+    if (!materialInfo.some(col => col[1] === 'rating_sum')) {
+      db.run("ALTER TABLE materials ADD COLUMN rating_sum INTEGER DEFAULT 0");
+    }
+    if (!materialInfo.some(col => col[1] === 'rating_count')) {
+      db.run("ALTER TABLE materials ADD COLUMN rating_count INTEGER DEFAULT 0");
+    }
+  } catch (error) {
+    console.warn('升级 materials 表时出错:', error);
+  }
+
 
   // 收藏表
   db.run(`
@@ -250,6 +301,188 @@ export async function initDatabase() {
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
+    )
+  `);
+
+  // 浏览历史表
+  db.run(`
+    CREATE TABLE IF NOT EXISTS views (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER,
+      material_id INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (material_id) REFERENCES materials(id) ON DELETE CASCADE
+    )
+  `);
+
+  // 评论点赞表
+  db.run(`
+    CREATE TABLE IF NOT EXISTS comment_likes (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      comment_id INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+      UNIQUE(user_id, comment_id)
+    )
+  `);
+
+  // 举报表
+  db.run(`
+    CREATE TABLE IF NOT EXISTS reports (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      target_type TEXT NOT NULL, -- 'material' or 'comment'
+      target_id INTEGER NOT NULL,
+      reason TEXT NOT NULL,
+      description TEXT,
+      status TEXT DEFAULT 'pending', -- 'pending', 'resolved', 'dismissed'
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // 徽章定义表
+  db.run(`
+    CREATE TABLE IF NOT EXISTS badges (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      code TEXT UNIQUE NOT NULL, -- 如 'first_upload', 'contributor_level_1'
+      name TEXT NOT NULL,
+      description TEXT,
+      icon TEXT NOT NULL, -- emoji 或 图片URL
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  // 用户徽章关联表
+  db.run(`
+    CREATE TABLE IF NOT EXISTS user_badges (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      badge_id INTEGER NOT NULL,
+      earned_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (badge_id) REFERENCES badges(id) ON DELETE CASCADE,
+      UNIQUE(user_id, badge_id)
+    )
+  `);
+
+  // 初始化一些默认徽章
+  const badgeCount = db.exec("SELECT COUNT(*) as count FROM badges")[0].values[0][0];
+  if (badgeCount === 0) {
+    const insertBadge = db.prepare("INSERT INTO badges (code, name, description, icon) VALUES (?, ?, ?, ?)");
+    insertBadge.run(['pioneer', '先锋成员', '早期注册用户', '🚀']);
+    insertBadge.run(['first_upload', '初次贡献', '上传了第一个资料', '🌱']);
+    insertBadge.run(['active_contributor', '活跃贡献者', '上传了5个以上资料', '🔥']);
+    insertBadge.run(['popular_author', '人气作者', '获得超过50个赞', '⭐']);
+    insertBadge.run(['commentator', '热心评论', '发表了10条评论', '💬']);
+    console.log('✅ 初始化默认徽章完成');
+  }
+
+  // 关注系统
+  db.run(`
+    CREATE TABLE IF NOT EXISTS follows (
+      follower_id INTEGER NOT NULL,
+      following_id INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (follower_id, following_id),
+      FOREIGN KEY (follower_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (following_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // 社区帖子
+  db.run(`
+    CREATE TABLE IF NOT EXISTS community_posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      images TEXT, -- 存储 JSON 数组字符串
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // 帖子点赞
+  db.run(`
+    CREATE TABLE IF NOT EXISTS community_likes (
+      user_id INTEGER NOT NULL,
+      post_id INTEGER NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user_id, post_id),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE
+    )
+  `);
+
+  // 帖子评论
+  db.run(`
+    CREATE TABLE IF NOT EXISTS community_comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      post_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (post_id) REFERENCES community_posts(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // 悬赏求助表
+  db.run(`
+    CREATE TABLE IF NOT EXISTS bounties (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      reward_xp INTEGER NOT NULL,
+      status TEXT DEFAULT 'open', -- 'open', 'solved', 'closed'
+      solved_by INTEGER,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      images TEXT, -- JSON string of image URLs
+      tags TEXT, -- JSON string of tags
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (solved_by) REFERENCES users(id) ON DELETE SET NULL
+    )
+  `);
+
+  try {
+    db.run(`ALTER TABLE bounties ADD COLUMN images TEXT`);
+  } catch (e) { /* ignore if exists */ }
+  try {
+    db.run(`ALTER TABLE bounties ADD COLUMN tags TEXT`);
+  } catch (e) { /* ignore if exists */ }
+
+  // 悬赏回答表
+  db.run(`
+    CREATE TABLE IF NOT EXISTS bounty_answers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      bounty_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      images TEXT, -- JSON string of image URLs
+      is_accepted INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (bounty_id) REFERENCES bounties(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  try {
+    db.run(`ALTER TABLE bounty_answers ADD COLUMN images TEXT`);
+  } catch (e) { /* ignore if exists */ }
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS bounty_answer_comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      answer_id INTEGER NOT NULL,
+      user_id INTEGER NOT NULL,
+      content TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (answer_id) REFERENCES bounty_answers(id) ON DELETE CASCADE,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);
 

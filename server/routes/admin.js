@@ -174,4 +174,86 @@ router.delete('/materials/:id', (req, res) => {
     }
 });
 
+// ========== 举报管理 ==========
+
+// 获取举报列表
+router.get('/reports', (req, res) => {
+    try {
+        const { status = 'pending' } = req.query;
+
+        let sql = `
+            SELECT r.*, u.username as reporter_name 
+            FROM reports r 
+            JOIN users u ON r.user_id = u.id 
+        `;
+
+        if (status !== 'all') {
+            sql += ` WHERE r.status = '${status}'`;
+        }
+
+        sql += ` ORDER BY r.created_at DESC`;
+
+        const reports = prepare(sql).all();
+
+        // 补充被举报内容的详情（因为target_type不同，不想写太复杂的JOIN）
+        const reportsWithDetails = reports.map(r => {
+            let content = null;
+            if (r.target_type === 'material') {
+                content = prepare('SELECT title as content_preview, id FROM materials WHERE id = ?').get(r.target_id);
+            } else if (r.target_type === 'comment') {
+                content = prepare('SELECT content as content_preview, id FROM comments WHERE id = ?').get(r.target_id);
+            }
+            // 如果内容已被删除
+            if (!content) {
+                content = { content_preview: '[内容已删除]', id: r.target_id, deleted: true };
+            }
+            return { ...r, ...content };
+        });
+
+        res.json(reportsWithDetails);
+    } catch (error) {
+        console.error('获取举报列表失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
+
+// 处理举报 (状态更新)
+router.post('/reports/:id/status', (req, res) => {
+    try {
+        const { status } = req.body; // 'resolved' or 'dismissed'
+        if (!['pending', 'resolved', 'dismissed'].includes(status)) {
+            return res.status(400).json({ error: '无效的状态' });
+        }
+
+        prepare('UPDATE reports SET status = ? WHERE id = ?').run(status, req.params.id);
+        res.json({ message: '举报状态已更新' });
+    } catch (error) {
+        console.error('更新举报状态失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
+
+// 删除被举报的内容
+router.delete('/reports/:id/content', (req, res) => {
+    try {
+        const report = prepare('SELECT * FROM reports WHERE id = ?').get(req.params.id);
+        if (!report) return res.status(404).json({ error: '举报不存在' });
+
+        // 删除内容
+        if (report.target_type === 'material') {
+            prepare('DELETE FROM materials WHERE id = ?').run(report.target_id);
+        } else if (report.target_type === 'comment') {
+            prepare('DELETE FROM comments WHERE id = ?').run(report.target_id);
+        }
+
+        // 自动将举报标记为 resolved
+        prepare("UPDATE reports SET status = 'resolved' WHERE id = ?").run(req.params.id);
+
+        res.json({ message: '违规内容已删除，举报已处理' });
+    } catch (error) {
+        console.error('处理举报内容失败:', error);
+        res.status(500).json({ error: '服务器错误' });
+    }
+});
+
 export default router;

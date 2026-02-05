@@ -26,11 +26,13 @@ export function optionalAuth(req, res, next) {
     const token = authHeader && authHeader.split(' ')[1];
 
     if (token) {
-        jwt.verify(token, JWT_SECRET, (err, user) => {
-            if (!err) {
-                req.user = user;
-            }
-        });
+        try {
+            const user = jwt.verify(token, JWT_SECRET);
+            req.user = user;
+        } catch (err) {
+            // 忽略验证错误，因为是可选的
+            console.warn('Optional auth token invalid');
+        }
     }
     next();
 }

@@ -46,12 +46,20 @@ const Navbar = () => {
                                 <span className="nav-icon">🔍</span>
                                 浏览资料
                             </Link>
+                            <Link to="/community" className="nav-link" onClick={closeMenu}>
+                                <span className="nav-icon">💬</span>
+                                社区交流
+                            </Link>
                             {isAuthenticated && (
                                 <Link to="/upload" className="nav-link" onClick={closeMenu}>
                                     <span className="nav-icon">📤</span>
                                     上传资料
                                 </Link>
                             )}
+                            <Link to="/leaderboard" className="nav-link" onClick={closeMenu}>
+                                <span className="nav-icon">🏆</span>
+                                先锋榜
+                            </Link>
                             <Link to="/about" className="nav-link" onClick={closeMenu}>
                                 <span className="nav-icon">💡</span>
                                 关于我们
@@ -69,7 +77,7 @@ const Navbar = () => {
                                         </Link>
                                     )}
                                     <Link to="/profile" className="user-avatar" onClick={closeMenu}>
-                                        <div className="avatar">
+                                        <div className="avatar avatar-sm">
                                             {user.avatar ? (
                                                 <img src={user.avatar} alt={user.username} />
                                             ) : (
@@ -96,7 +104,7 @@ const Navbar = () => {
                     </div>
                 </div>
             </div>
-        </nav >
+        </nav>
     );
 };
 

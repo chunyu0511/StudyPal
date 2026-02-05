@@ -1,6 +1,7 @@
 
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import BottomNav from '../components/BottomNav';
 
 // Footer 组件可以直接在这里定义或者引入（之前在App.jsx里）
 const Footer = () => {
@@ -32,6 +33,7 @@ const MainLayout = () => {
                 <Outlet />
             </main>
             <Footer />
+            <BottomNav />
         </div>
     );
 };

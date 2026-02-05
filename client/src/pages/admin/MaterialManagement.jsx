@@ -59,23 +59,24 @@ const MaterialManagement = () => {
                                 <td>#{m.id}</td>
                                 <td>
                                     <div className="table-row-title">
-                                        <a href={`/materials/${m.id}`} target="_blank" rel="noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                                        <a href={`/materials/${m.id}`} target="_blank" rel="noreferrer" style={{ color: 'var(--text-light)', textDecoration: 'none' }}>
                                             {m.title}
                                         </a>
                                     </div>
-                                    <div className="table-row-sub">
+                                    <div className="table-row-sub" style={{ color: 'var(--text-muted)' }}>
                                         上传者: {m.uploader_username} • {new Date(m.created_at).toLocaleDateString()}
                                     </div>
                                 </td>
                                 <td>
-                                    <span style={{ textTransform: 'uppercase', fontWeight: 600, fontSize: '0.8rem', color: '#64748b' }}>
+                                    <span style={{ textTransform: 'uppercase', fontWeight: 600, fontSize: '0.8rem', color: 'var(--accent-lime)' }}>
                                         {m.file_type}
                                     </span>
                                 </td>
-                                <td>{(m.file_size / 1024 / 1024).toFixed(2)} MB</td>
+                                <td style={{ color: 'var(--text-muted)' }}>{(m.file_size / 1024 / 1024).toFixed(2)} MB</td>
                                 <td style={{ textAlign: 'right' }}>
                                     <button
-                                        className="delete-btn"
+                                        className="btn btn-secondary"
+                                        style={{ color: 'var(--accent-orange)', borderColor: 'rgba(255, 107, 53, 0.3)', background: 'transparent', padding: '0.4rem 0.8rem', fontSize: '0.8rem' }}
                                         onClick={() => handleDelete(m.id)}
                                     >
                                         🗑️ 强制删除

@@ -1,147 +1,289 @@
+/* Profile Page - Zine Dark Theme */
 .profile-page {
-    min-height: 100vh;
-    background: var(--bg-primary);
+    min-height: 80vh;
+    padding-bottom: 4rem;
 }
 
-/* 个人信息头部 */
+/* Profile Header */
 .profile-header {
-    background: linear-gradient(135deg,
-            rgba(255, 182, 208, 0.15) 0%,
-            rgba(182, 208, 255, 0.15) 100%);
-    padding: var(--spacing-3xl) 0;
-    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .profile-header {
+        padding: 1rem 0;
+        margin-bottom: 1rem;
+    }
+}
+
+.profile-header .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
 .profile-header-content {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: 2rem;
 }
 
 .avatar-section {
     display: flex;
-    gap: var(--spacing-lg);
     align-items: center;
+    gap: 1.5rem;
 }
 
 .avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 4px solid white;
-    box-shadow: var(--shadow-lg);
-}
-
-.avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    position: relative;
 }
 
 .avatar-placeholder {
     width: 100%;
     height: 100%;
+    background: var(--accent-lime);
+    color: var(--bg-dark);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: white;
-    font-size: 48px;
-    font-weight: 700;
 }
 
-.user-info {
+.user-title-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.user-info h1 {
+    font-size: 1.8rem;
+    color: var(--text-light);
+    margin: 0;
+}
+
+.user-level-tag {
+    font-weight: 800;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.2rem 0.8rem;
+    border-radius: 100px;
+    border: 1px solid var(--border-subtle);
+}
+
+.user-info .email {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+}
+
+.user-social-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin: 1rem 0;
+}
+
+.social-stat-item {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.social-stat-item b {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.social-stat-item.clickable {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.social-stat-item.clickable:hover {
+    opacity: 0.8;
+}
+
+/* User List Modal */
+.users-list-modal {
+    max-width: 400px;
+    width: 90%;
+}
+
+.modal-users-grid {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
 }
 
-.username {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-primary);
+.user-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    transition: background 0.2s;
+}
+
+.user-list-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.user-list-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-list-name {
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.user-list-level {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.empty-modal-text {
+    text-align: center;
+    color: var(--text-muted);
+    padding: 2rem 0;
+}
+
+.user-xp-bar {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 1.5rem;
+}
+
+.xp-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.progress-bg {
+    height: 8px;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-lime), #80ff00);
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(200, 255, 0, 0.3);
+    transition: width 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.user-info .bio {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    max-width: 400px;
+    line-height: 1.5;
     margin: 0;
-}
-
-.email {
-    font-size: 16px;
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-.bio {
-    font-size: 15px;
-    color: var(--text-secondary);
-    margin-top: var(--spacing-xs);
-    max-width: 500px;
 }
 
 .edit-actions {
     display: flex;
-    gap: var(--spacing-md);
+    gap: 0.75rem;
 }
 
+/* Edit Form */
 .edit-form {
-    background: var(--bg-secondary);
-    padding: var(--spacing-lg);
-    border-radius: var(--radius-lg);
-    margin-top: var(--spacing-lg);
-    box-shadow: var(--shadow-md);
+    margin-top: 2rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    border: 1px solid var(--border-subtle);
 }
 
 .edit-form .form-group {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 2rem;
 }
 
-.edit-form .form-group:last-child {
-    margin-bottom: 0;
+.avatar-upload-group label {
+    font-weight: 700;
+    color: var(--text-light) !important;
+    font-size: 1rem !important;
 }
 
-.edit-form label {
+.avatar-preview-container {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.upload-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.upload-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.edit-form textarea {
+    width: 100%;
+    background: var(--bg-dark);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 1rem;
+    color: var(--text-light);
+    font-size: 1rem;
+    min-height: 120px;
+    resize: none;
+}
+
+.char-limit {
     display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
 }
 
-/* 统计卡片 */
+/* Stats Cards */
 .stats-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-xl);
+    gap: 1rem;
 }
 
 .stat-card {
-    background: white;
-    padding: var(--spacing-xl);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
+    background: var(--bg-dark);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 1.5rem;
     display: flex;
     align-items: center;
-    gap: var(--spacing-lg);
-    transition: all var(--transition-base);
+    gap: 1rem;
+    transition: all 0.2s;
 }
 
 .stat-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-lime);
+    transform: translateY(-2px);
 }
 
 .stat-icon {
-    font-size: 48px;
-    width: 80px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg,
-            rgba(255, 107, 157, 0.1) 0%,
-            rgba(107, 157, 255, 0.1) 100%);
-    border-radius: var(--radius-lg);
+    font-size: 2rem;
+    flex-shrink: 0;
 }
 
 .stat-content {
@@ -149,180 +291,148 @@
 }
 
 .stat-number {
-    font-size: 36px;
+    font-size: 1.8rem;
     font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: var(--spacing-xs);
+    color: var(--text-light);
+    line-height: 1;
+    margin-bottom: 0.25rem;
 }
 
 .stat-label {
-    font-size: 14px;
-    color: var(--text-secondary);
+    font-size: 0.85rem;
+    color: var(--text-muted);
 }
 
-/* 标签页 */
+/* Tabs */
 .profile-tabs {
     display: flex;
-    gap: var(--spacing-md);
-    margin: var(--spacing-xl) 0;
-    border-bottom: 2px solid var(--border-light);
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 2rem;
 }
 
 .tab-btn {
-    padding: var(--spacing-md) var(--spacing-xl);
-    background: none;
+    padding: 0.75rem 1.5rem;
+    background: transparent;
     border: none;
-    font-size: 16px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
     font-weight: 500;
-    color: var(--text-secondary);
     cursor: pointer;
-    transition: all var(--transition-base);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
     position: relative;
 }
 
 .tab-btn:hover {
-    color: var(--text-primary);
+    color: var(--text-light);
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .tab-btn.active {
-    color: var(--primary-color);
-    font-weight: 600;
+    color: var(--accent-lime);
+    border-bottom-color: var(--accent-lime);
 }
 
-.tab-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--primary-color);
-    animation: slideIn 0.3s ease;
-}
-
-/* 内容区域 */
-.tab-content {
-    padding: var(--spacing-xl) 0;
-    min-height: 400px;
+/* Content Area */
+.profile-content {
+    padding: 0 0 2rem;
 }
 
 .materials-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: var(--spacing-lg);
-    animation: fadeIn 0.5s ease;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
 }
 
-/* 空状态 */
+/* Empty State */
 .empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-3xl);
     text-align: center;
-    grid-column: 1 / -1;
+    padding: 4rem 2rem;
 }
 
-.empty-icon {
-    font-size: 80px;
-    margin-bottom: var(--spacing-lg);
-    animation: bounce 2s ease-in-out infinite;
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
 }
 
 .empty-state h3 {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
+    font-size: 1.3rem;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-    font-size: 15px;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-lg);
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
 }
 
-/* 未登录状态 */
+/* Not Logged In State */
 .not-logged-in {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-3xl);
     text-align: center;
-    min-height: 60vh;
+    padding: 6rem 2rem;
 }
 
 .lock-icon {
-    font-size: 120px;
-    margin-bottom: var(--spacing-lg);
-    animation: pulse 2s ease-in-out infinite;
+    font-size: 5rem;
+    margin-bottom: 1.5rem;
+    opacity: 0.5;
 }
 
 .not-logged-in h2 {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: var(--spacing-sm);
+    font-size: 2rem;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
 }
 
 .not-logged-in p {
-    font-size: 16px;
-    color: var(--text-secondary);
-    margin-bottom: var(--spacing-xl);
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
 }
 
-/* 加载状态 */
-.loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-3xl);
-    gap: var(--spacing-lg);
-    color: var(--text-secondary);
-}
-
-/* 响应式 */
-@media (max-width: 1024px) {
-    .stats-cards {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
     .profile-header-content {
         flex-direction: column;
-        gap: var(--spacing-lg);
+        align-items: center;
+        /* 居中对齐更好看 */
+        gap: 1.5rem;
     }
 
     .avatar-section {
         flex-direction: column;
         text-align: center;
+        gap: 1rem;
     }
 
-    .user-info {
-        align-items: center;
+    .user-info h1 {
+        font-size: 1.5rem;
     }
 
-    .bio {
-        text-align: center;
+    .user-title-row {
+        justify-content: center;
+        flex-wrap: wrap;
     }
 
-    .edit-actions {
-        width: 100%;
-    }
-
-    .edit-actions .btn {
-        flex: 1;
+    .user-social-stats {
+        justify-content: center;
+        font-size: 0.8rem;
     }
 
     .stats-cards {
         grid-template-columns: 1fr;
+        /* 保持单列，但减小内边距 */
+        gap: 0.75rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
     }
 
     .profile-tabs {
@@ -331,8 +441,6 @@
     }
 
     .tab-btn {
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: 14px;
         white-space: nowrap;
     }
 
@@ -340,53 +448,57 @@
         grid-template-columns: 1fr;
     }
 
-    .username {
-        font-size: 24px;
+    .materials-grid {
+        grid-template-columns: 1fr;
     }
 }
 
-@media (max-width: 480px) {
-    .avatar {
-        width: 90px;
-        height: 90px;
-    }
-
-    .avatar-placeholder {
-        font-size: 36px;
-    }
-
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 32px;
-    }
-
-    .stat-number {
-        font-size: 28px;
-    }
+/* Admin Badge & User Badges */
+.admin-badge {
+    background: #eb5757;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    vertical-align: middle;
 }
 
-/* 动画 */
-@keyframes slideIn {
-    from {
-        transform: scaleX(0);
-    }
-
-    to {
-        transform: scaleX(1);
-    }
+.badges-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
 }
 
-@keyframes pulse {
+.badge-item.clickable {
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    padding: 0.5rem;
+    border-radius: 12px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+.badge-item.clickable:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-3px) scale(1.1);
+    border-color: var(--accent-lime);
+    box-shadow: 0 5px 15px rgba(200, 255, 0, 0.1);
+}
 
-    50% {
-        transform: scale(1.05);
-        opacity: 0.8;
-    }
+.more-badges {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    align-self: center;
+}
+
+.badge-icon {
+    font-size: 1rem;
+    line-height: 1;
 }

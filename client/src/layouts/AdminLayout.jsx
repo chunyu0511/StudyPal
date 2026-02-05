@@ -40,6 +40,9 @@ const AdminLayout = () => {
                     <NavLink to="/admin/materials" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
                         <span>📚</span> 资料管理
                     </NavLink>
+                    <NavLink to="/admin/reports" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+                        <span>🚩</span> 举报审核
+                    </NavLink>
                     <NavLink to="/admin/settings" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
                         <span>⚙️</span> 系统设置
                     </NavLink>

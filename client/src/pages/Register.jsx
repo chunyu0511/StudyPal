@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import './Auth.css';
 
 const Register = () => {
@@ -12,144 +13,76 @@ const Register = () => {
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const toast = useToast();
 
     const { register } = useAuth();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
         setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-
-        // 验证
         if (formData.password !== formData.confirmPassword) {
+            toast.error('两次输入的密码不一致');
             setError('两次输入的密码不一致');
             return;
         }
-
         if (formData.password.length < 6) {
+            toast.warning('密码长度至少为6个字符');
             setError('密码长度至少为6个字符');
             return;
         }
-
         setLoading(true);
-
         try {
             await register(formData.username, formData.email, formData.password);
+            toast.success(`注册成功！欢迎加入，${formData.username} ✨`);
             navigate('/');
         } catch (err) {
-            setError(err.response?.data?.error || '注册失败，请稍后重试');
+            const errorMsg = err.response?.data?.error || '注册失败，请稍后重试';
+            setError(errorMsg);
+            toast.error(errorMsg);
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="auth-page">
-            <div className="auth-container">
-                <div className="auth-card">
-                    <div className="auth-header">
-                        <h1 className="auth-title">加入学伴 🎓</h1>
-                        <p className="auth-subtitle">开始你的学习之旅</p>
-                    </div>
+        <div className="auth-container">
+            <div className="auth-header">
+                <h2>创建账号</h2>
+                <p>加入 StudyPal，开始知识共享</p>
+            </div>
 
-                    {error && (
-                        <div className="alert alert-error">
-                            <span>⚠️</span>
-                            {error}
-                        </div>
-                    )}
+            {error && <div style={{ color: 'var(--danger-color)', marginBottom: '1rem', fontSize: '0.9rem' }}>⚠️ {error}</div>}
 
-                    <form className="auth-form" onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label htmlFor="username" className="form-label">
-                                用户名
-                            </label>
-                            <input
-                                type="text"
-                                id="username"
-                                name="username"
-                                className="input"
-                                placeholder="选择一个用户名"
-                                value={formData.username}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="email" className="form-label">
-                                邮箱
-                            </label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                className="input"
-                                placeholder="输入你的邮箱"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="password" className="form-label">
-                                密码
-                            </label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                className="input"
-                                placeholder="至少6个字符"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label htmlFor="confirmPassword" className="form-label">
-                                确认密码
-                            </label>
-                            <input
-                                type="password"
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                className="input"
-                                placeholder="再次输入密码"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-
-                        <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%' }}>
-                            {loading ? '注册中...' : '注册'}
-                        </button>
-                    </form>
-
-                    <div className="auth-footer">
-                        <p className="auth-link-text">
-                            已有账号？
-                            <Link to="/login" className="auth-link">立即登录</Link>
-                        </p>
-                    </div>
+            <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="form-group">
+                    <label>用户名</label>
+                    <input type="text" name="username" value={formData.username} onChange={handleChange} required />
                 </div>
-
-                <div className="auth-decoration">
-                    <div className="decoration-circle circle-1"></div>
-                    <div className="decoration-circle circle-2"></div>
-                    <div className="decoration-circle circle-3"></div>
+                <div className="form-group">
+                    <label>邮箱</label>
+                    <input type="email" name="email" value={formData.email} onChange={handleChange} required />
                 </div>
+                <div className="form-group">
+                    <label>密码</label>
+                    <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+                </div>
+                <div className="form-group">
+                    <label>确认密码</label>
+                    <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+                </div>
+                <button type="submit" className="btn btn-primary" disabled={loading} style={{ marginTop: '1rem' }}>
+                    {loading ? '注册中...' : '注册'}
+                </button>
+            </form>
+
+            <div className="auth-footer">
+                已有账号？ <Link to="/login">直接登录</Link>
             </div>
         </div>
     );

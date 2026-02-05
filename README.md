@@ -1,51 +1,61 @@
+<div align="center">
+  <h1>🎓 学伴 StudyPal</h1>
+  <p><strong>让知识自由流动 · 打造现代化的校园知识共享社区</strong></p>
 
-# 🎓 学伴 (StudyPal)
-
-> **让知识自由流动** —— 专为大学生打造的现代化学习资料分享平台。
-
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-![React](https://img.shields.io/badge/React-19.0-61DAFB.svg?logo=react&logoColor=white)
-![Node](https://img.shields.io/badge/Node.js-18%2B-339933.svg?logo=node.js&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-Better--SQLite3-003B57.svg?logo=sqlite&logoColor=white)
+  <p>
+    <a href="#-特性概览">特性</a> •
+    <a href="#-快速开始">快速开始</a> •
+    <a href="#-技术栈">技术栈</a> •
+    <a href="#-待办计划">Roadmap</a>
+  </p>
+  
+  <p>
+    <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=flat-square&logo=react&logoColor=white" alt="React">
+    <img src="https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node">
+    <img src="https://img.shields.io/badge/SQLite-Fast-003B57?style=flat-square&logo=sqlite&logoColor=white" alt="SQLite">
+    <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License">
+  </p>
+</div>
 
 ---
 
-**学伴 (StudyPal)** 是一个全栈开发的资料分享社区。它不仅拥有流畅的前台交互体验，更配备了**商业级标准的管理后台**。项目采用 React 19 + Express + SQLite 架构，追求极致的性能与开发体验。
+**StudyPal** 是一个全栈开发的现代化资料分享平台。它完美融合了**资源检索**、**社区互动**与**游戏化激励**机制，旨在解决高校内部信息差，让优质的学习资料触手可及。
 
-## ✨ 核心特性
+## ✨ 特性概览
 
-### 🌟 用户端 (Client)
-用户的学习资源中心，体验丝滑流畅。
+### 📂 资料中心 (Materials Hub)
+- **极速检索**：支持标题/描述模糊搜索，多维度（分类、热度）智能排序。
+- **全格式预览**：内置 PDF、Office 文档及视频流媒体预览引擎，所见即所得。
+- **个人知识库**：集成收藏夹、浏览历史与下载记录，管理你的学习轨迹。
 
-- 🔍 **精准检索**：支持标题/描述模糊搜索，可按**分类**（试卷/笔记）、**类型**及**热度/评分**排序。
-- 📤 **便捷上传**：支持 PDF、Office 文档及 MP4 视频直传，自动识别文件类型。
-- � **社区互动**：完整的**评论**、**评分**系统，支持资料**收藏**与下载计数。
-- 🎨 **现代 UI**：基于 Glassmorphism（毛玻璃）风格设计，响应式布局适配。
+### 💬 社区与悬赏 (Community & Bounty)
+- **Discussion V2**：深度整合的讨论广场，支持富文本、图片直传与多级评论互动。
+- **悬赏大厅**：独有的 **XP 悬赏机制**。遇到难题？发布悬赏，重金求助，支持退款保障与回答追问。
+- **关注流**：订阅学霸动态，构建属于你的学术社交圈。
 
-### 🛡️ 管理后台 (Admin Portal)
-独立且强大的管理系统，掌控全局。
+### 🎮 游戏化激励 (Gamification)
+- **XP 经济系统**：上传资料、解答悬赏均可赚取 XP。
+- **荣誉体系**：实时更新的 **全站先锋榜** 与成就徽章系统 (Badges)，让贡献被看见。
+- **等级特权**：升级解锁更多社区权限与专属标识。
 
-- 📊 **数据可视化**：集成 **Recharts**，实时展示近 7 天用户增长、资料上传与下载趋势图。
-- 👥 **用户审计**：查看用户列表，支持一键**封禁/解封**违规账号（实时生效）。
-- ⚙️ **系统配置**：动态控制网站名称、**开放注册开关**及维护模式，无需重启服务器。
-- 📝 **安全操作**：所有敏感操作（如强制删除资料）均有日志记录（模拟）。
+### 🛡️ 商业级后台 (Admin Portal)
+- **数据可视化**：集成 Recharts 的动态仪表盘，实时监控用户增长与内容趋势。
+- **内容审计**：高效的用户封禁与内容举报处理流程，维护社区健康。
 
-## �️ 技术栈
+## 🛠 技术栈
 
-| 模块 | 技术选型 | 说明 |
+| 领域 | 核心技术 | 亮点 |
 | :--- | :--- | :--- |
-| **Frontend** | **React 19** + Vite | 最新版 React，配合 Vite 实现秒级热更新 |
-| | React Router v6 | 实现前台与后台 (`/admin/*`) 的路由分离 |
-| | **Recharts** | 专业级数据图表库 |
-| | Axios | 统一封装的 HTTP 请求客户端 |
-| **Backend** | **Node.js** + Express | 经典的 RESTful API 架构 |
-| | **Better-SQLite3** | 高性能本地数据库，无需配置各类 Server |
-| | JWT + bcrypt | 工业级标准的身份验证与密码加密方案 |
-| | Multer | 处理多格式文件上传 |
+| **Frontend** | **React 19** + Vite | 极致的性能与秒级热更新体验 |
+| | React Router v6 | 现代化的 SPA 路由管理 |
+| | CSS Variables | 原生 CSS 变量实现的一键换肤基础 |
+| **Backend** | **Node.js** + Express | 稳健的 RESTful API 架构 |
+| | **better-sqlite3** | 高性能无依赖的本地数据库方案 |
+| | JWT + Multer | 标准化的鉴权与文件流处理 |
 
 ## 🚀 快速开始
 
-只需三步，即可在本地运行完整的项目。
+只需三步，本地启动完整环境。
 
 ### 1. 克隆项目
 ```bash
@@ -53,53 +63,36 @@ git clone https://github.com/yourusername/studypal.git
 cd studypal
 ```
 
-### 2. 启动后端 (Server)
-后端运行在 `http://localhost:3000`。首次运行会自动创建 SQLite 数据库文件并初始化表结构。
+### 2. 启动服务
 
+**后端 (Server)** - *Port 3000*
 ```bash
 cd server
 npm install
 npm run dev
-# 默认管理员账号将在控制台提示创建，或使用 initAdmin 脚本
 ```
 
-### 3. 启动前端 (Client)
-前端运行在 `http://localhost:5173`。
-
+**前端 (Client)** - *Port 5173*
 ```bash
+# 新开一个终端窗口
 cd client
 npm install
 npm run dev
 ```
 
-现在访问 `http://localhost:5173` 即可体验！
+访问 `http://localhost:5173` 即可开始体验。
 
-## � 目录结构
+## 📅 待办计划 (Roadmap)
 
-```
-root/
-├── client/                 # React 前端
-│   ├── src/
-│   │   ├── layouts/        # 布局 (AdminLayout, MainLayout)
-│   │   ├── pages/          # 页面组件
-│   │   │   ├── admin/      # 后台页面 (Overview, Users...)
-│   │   │   └── ...         # 前台页面 (Home, Materials...)
-│   │   ├── components/     # 通用组件
-│   │   └── utils/          # 工具函数 (api.js 封装)
-│
-├── server/                 # Express 后端
-│   ├── models/             # 数据库层 (database.js)
-│   ├── routes/             # API 路由
-│   ├── middleware/         # 鉴权中间件
-│   └── uploads/            # 物理文件存储区
-```
-
-##  待办计划 (Roadmap)
-
-- [ ] 集成 Nodemailer 实现邮件通知与找回密码
-- [ ] 个人中心增强：头像上传与编辑
-- [ ] 首页增加“热门推荐”动态流
+- [x] **Core**: 等级、XP、徽章游戏化系统
+- [x] **Social**: 社区动态、悬赏大厅 V2 (多图/标签/退款)
+- [x] **Home**: 首页社交简报与热门推荐
+- [ ] **Notification**: 实时消息中心 (Socket.io)
+- [ ] **AI**: 基于 LLM 的资料摘要与智能问答助手
+- [ ] **Collections**: 用户自定义资料合集
 
 ---
 
-Made with ❤️ by StudyPal Team
+<div align="center">
+  <p>Made with ❤️ by StudyPal Team</p>
+</div>
